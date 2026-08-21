@@ -1,0 +1,20 @@
+name: probe-noenv
+on:
+  push:
+    paths: ['deploy-trigger.txt']
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: noenv-gate
+      cancel-in-progress: true
+    steps:
+      - run: echo "gate ${{ github.run_id }}"
+  deploy:
+    needs: gate
+    runs-on: ubuntu-latest
+    concurrency:
+      group: noenv-deploy
+      cancel-in-progress: false
+    steps:
+      - run: echo "deploying ${{ github.run_id }}"; sleep 240; echo done
