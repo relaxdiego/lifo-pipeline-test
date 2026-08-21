@@ -1,0 +1,13 @@
+name: probe
+on:
+  push:
+    branches: [main]
+jobs:
+  gated:
+    runs-on: ubuntu-latest
+    environment: probe
+    concurrency:
+      group: probe
+      cancel-in-progress: false
+    steps:
+      - run: echo "ran ${{ github.run_id }}"
