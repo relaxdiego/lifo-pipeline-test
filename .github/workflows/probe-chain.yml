@@ -1,0 +1,31 @@
+name: probe-chain
+on:
+  push:
+    paths: ['chain-trigger.txt']
+jobs:
+  dev-deploy:
+    runs-on: ubuntu-latest
+    concurrency: {group: chain-dev-deploy, cancel-in-progress: false}
+    steps: [{run: 'echo dev ${{ github.run_id }}'}]
+  stage-gate:
+    needs: dev-deploy
+    runs-on: ubuntu-latest
+    environment: probe
+    concurrency: {group: chain-stage-gate, cancel-in-progress: true}
+    steps: [{run: 'echo stage-gate ${{ github.run_id }}'}]
+  stage-deploy:
+    needs: stage-gate
+    runs-on: ubuntu-latest
+    concurrency: {group: chain-stage-deploy, cancel-in-progress: false}
+    steps: [{run: 'echo stage ${{ github.run_id }}'}]
+  prod-gate:
+    needs: stage-deploy
+    runs-on: ubuntu-latest
+    environment: probe
+    concurrency: {group: chain-prod-gate, cancel-in-progress: true}
+    steps: [{run: 'echo prod-gate ${{ github.run_id }}'}]
+  prod-deploy:
+    needs: prod-gate
+    runs-on: ubuntu-latest
+    concurrency: {group: chain-prod-deploy, cancel-in-progress: false}
+    steps: [{run: 'echo prod ${{ github.run_id }}'}]
