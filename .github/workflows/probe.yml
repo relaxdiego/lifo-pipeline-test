@@ -1,13 +1,21 @@
-name: probe
+name: probe-gated
 on:
   push:
-    branches: [main]
+    paths: ['gate-trigger.txt']
 jobs:
-  gated:
+  gate:
     runs-on: ubuntu-latest
     environment: probe
     concurrency:
-      group: probe
+      group: probe-gate
       cancel-in-progress: true
     steps:
-      - run: echo "ran ${{ github.run_id }}"
+      - run: echo "gate passed for ${{ github.run_id }}"
+  deploy:
+    needs: gate
+    runs-on: ubuntu-latest
+    concurrency:
+      group: probe-deploy
+      cancel-in-progress: false
+    steps:
+      - run: echo "deploying ${{ github.run_id }}"; sleep 240; echo done
