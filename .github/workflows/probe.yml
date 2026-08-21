@@ -8,6 +8,6 @@ jobs:
     environment: probe
     concurrency:
       group: probe
-      cancel-in-progress: false
+      cancel-in-progress: true
     steps:
       - run: echo "ran ${{ github.run_id }}"
